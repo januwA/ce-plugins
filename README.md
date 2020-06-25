@@ -33,6 +33,18 @@ end, 100)
 
 ## movbe 对应asm的`movbe`指令
 
-在地址列表上添加右键菜单movbe选项，将选中项的值改为`movbe`指令转换后的值
+在地址列表上添加右键菜单movbe选项，在新的视图中查看转换后的值
 
 通常这个值的类型为4字节
+
+![](./images/2020-06-25-18-01-36.png)
+
+
+## autorunMonoMethod
+激活mono，并自动编译jit函数
+```
+{$lua}
+  if syntaxcheck then return end
+  _checkMonoMethod('PlayerAttribute', 'set_currentEnergy')
+{$asm}
+```
