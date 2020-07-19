@@ -48,3 +48,10 @@ end, 100)
   _checkMonoMethod('PlayerAttribute', 'set_currentEnergy')
 {$asm}
 ```
+
+## getJmpNewBytes
+获取新的跳转字节集
+```
+local newJmpBytes = getJmpNewBytes(0x008E05AE, 0x01350000, 5, { 0xE9 })
+writeBytes(0x008E05AE, r)
+```
