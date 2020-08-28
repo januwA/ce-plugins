@@ -60,3 +60,4 @@ writeBytes(0x008E05AE, r)
 - GetParent(hwnd): hwnd 获取窗口的父窗口 https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getparent
 - getTargetWindow(): hwnd 获取目标的进程的顶级窗口句柄
 - getTargetWindowRect(): RECT 获取目标窗口的信息 https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowrect
+- getWindowTextW(hwnd): string 获取宽字符标题 https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowtextw
