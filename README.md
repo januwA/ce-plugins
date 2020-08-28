@@ -61,3 +61,4 @@ writeBytes(0x008E05AE, r)
 - getTargetWindow(): hwnd 获取目标的进程的顶级窗口句柄
 - getTargetWindowRect(): RECT 获取目标窗口的信息 https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowrect
 - getWindowTextW(hwnd): string 获取宽字符标题 https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowtextw
+- targetWindowIsTop(): bool 如果目标进程在对顶层返回true，否则返回false
