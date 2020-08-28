@@ -1,13 +1,24 @@
+-- 打印table数据
+-- 通常你需要将 pl https://github.com/lunarmodules/Penlight/tree/master/lua/pl
+-- 下载到你的 <CE-DIR>/lua/pl
 function dump(t)
   require "pl.pretty".dump(t)
 end
 
--- 获取目标进程窗口句柄
+-- 获取父窗口，如果返回0则是顶级窗口
+-- https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getparent
+function GetParent(hwnd)
+ local parent = executeCodeLocalEx("GetParent", hwnd)
+ if parent == 0 then return nil end
+ return parent
+end
+
+-- 获取目标进程窗口句柄,只会返回顶级窗口句柄
 function getTargetWindow()
   local w = getWindow(getForegroundWindow(), GW_HWNDFIRST)
   local pid = getOpenedProcessID()
   while w and (w~=0) do
-    if getWindowProcessID(w) == pid and getWindowClassName(w) == "WTWindow" then
+    if getWindowProcessID(w) == pid and not GetParent(w) then
       return w
     end
     w = getWindow(w,GW_HWNDNEXT)

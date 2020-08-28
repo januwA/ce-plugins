@@ -55,3 +55,8 @@ end, 100)
 local newJmpBytes = getJmpNewBytes(0x008E05AE, 0x01350000, 5, { 0xE9 })
 writeBytes(0x008E05AE, r)
 ```
+
+- dump(table): nil  打印table
+- GetParent(hwnd): hwnd 获取窗口的父窗口 https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getparent
+- getTargetWindow(): hwnd 获取目标的进程的顶级窗口句柄
+- getTargetWindowRect(): RECT 获取目标窗口的信息 https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowrect
