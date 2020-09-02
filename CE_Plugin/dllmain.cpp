@@ -20,23 +20,20 @@ wchar_t targetFileDir[1024] = L"\0";
 
 BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
 {
-	DWORD  dwProcessID = 0;
-	GetWindowThreadProcessId(hwnd, &dwProcessID);
-	if (dwProcessID == GetCurrentProcessId()) // 判断pid
+	DWORD  pid = 0;
+	GetWindowThreadProcessId(hwnd, &pid);
+	if (pid == GetCurrentProcessId()) // 判断pid
 	{
-		if (!GetParent(hwnd)) // 是顶级窗口
+		char text[1024];
+		GetWindowTextA(hwnd, (LPSTR)text, 1024); // 必须含有标题文字
+		if (strlen(text) != 0 && IsWindowVisible(hwnd))
 		{
-			char text[1024];
-			GetWindowTextA(hwnd, (LPSTR)text, 1024); // 必须含有标题文字
-			if (strlen(text) != 0)
-			{
-				// printf("%s\n", text);
-				targetWindow = hwnd;
-				return false;
-			}
+			// printf("%s\n", text);
+			targetWindow = hwnd;
+			return FALSE;
 		}
 	}
-	return true;
+	return TRUE;
 }
 
 int WINAPI Mythread(HMODULE hModule)
