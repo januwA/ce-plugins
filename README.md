@@ -1,4 +1,8 @@
-将lua文件放在autorun文件夹下，重启Cheat engine使用.
+# Cheat Engine Plugin
+
+1. 下载zip文件, 将所有文件解压到`<CE-DIR>/autorun/`文件夹下
+2. 下载[PL](https://github.com/lunarmodules/Penlight/tree/master/lua/pl)到`<CE-DIR>/lua/pl`
+3. 重启Cheat Engine
 
 ## timer 在脚本中简单的使用计时器
 
