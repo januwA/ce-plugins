@@ -96,4 +96,64 @@ extern "C" {
 		}
 		return targetFileDir;
 	}
+
+	
+	/*
+		0关机 1重启 2注销
+		返回FALSE则失败，否者返回TRUE
+		https://www.cnblogs.com/ajanuw/p/13607687.html
+	*/
+	__declspec(dllexport) BOOL __stdcall exitWindowsEx(DWORD val)
+	{
+		DWORD uFlags;
+		if (val == 0)
+		{
+			// 关机
+			uFlags = EWX_SHUTDOWN | EWX_FORCE;
+		}
+		else if(val == 1) {
+			// 重启
+			uFlags = EWX_REBOOT | EWX_FORCE;
+		}
+		else if (val == 2)
+		{
+			// 注销
+			uFlags = EWX_LOGOFF | EWX_FORCE;
+		}
+		else {
+			return FALSE;
+		}
+
+
+		HANDLE hToken;
+		if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken))
+			return(FALSE);
+
+		// 获取关闭特权的LUID
+		TOKEN_PRIVILEGES tkp;
+		LookupPrivilegeValue(NULL, SE_SHUTDOWN_NAME, &tkp.Privileges[0].Luid);
+
+		tkp.PrivilegeCount = 1;  // one privilege to set    
+		tkp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+
+		// 获取此过程的关闭特权。
+		AdjustTokenPrivileges(hToken, FALSE, &tkp, 0, (PTOKEN_PRIVILEGES)NULL, 0);
+
+		if (GetLastError() != ERROR_SUCCESS)
+		{
+			CloseHandle(hToken);
+			return FALSE;
+		}
+
+		if (!ExitWindowsEx(uFlags,
+			SHTDN_REASON_MAJOR_OPERATINGSYSTEM |
+			SHTDN_REASON_MINOR_UPGRADE |
+			SHTDN_REASON_FLAG_PLANNED))
+		{
+			CloseHandle(hToken);
+			return FALSE;
+		}
+
+		return TRUE;
+	}
 }

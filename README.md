@@ -65,3 +65,6 @@ writeBytes(0x008E05AE, r)
 - getTargetFilePath(): string  返回目标进程在文件中的路径 C:\Users\ajanuw\Desktop\game2.exe
 - getTargetFileDir(): string   返回目标进程在文件中的目录 C:\Users\ajanuw\Desktop\
 - isInjectPluginDLL(): bool 是否注入了 CE_Plugin.dll
+- dumpProps(obj): void  打印一个对象的属性列表
+- dumpComps(obj): void  打印子组件的名称列表
+- exitWindowsEx(number val): bool  0关机 1重启 2注销 
