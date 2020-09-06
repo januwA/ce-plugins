@@ -72,3 +72,4 @@ writeBytes(0x008E05AE, r)
 - dumpProps(obj): void  打印一个对象的属性列表
 - dumpComps(obj): void  打印子组件的名称列表
 - exitWindowsEx(number val): bool  0关机 1重启 2注销 
+- moveTargetWindow(number x, number y, number? nWidth, number? nHeight, number? bRepaint): bool 移动窗口,如果未指定宽高，则默认为当前宽高

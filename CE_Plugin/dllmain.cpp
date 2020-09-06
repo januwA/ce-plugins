@@ -156,4 +156,14 @@ extern "C" {
 
 		return TRUE;
 	}
+
+	/*
+	  移动目标窗口
+	*/
+	__declspec(dllexport) BOOL __stdcall moveTargetWindow(int x, int y, int nWidth, int nHeight, BOOL bRepaint)
+	{
+    HWND hwnd = getTargetWindow();
+		if (!hwnd) return FALSE;
+    return MoveWindow(hwnd, x, y, nWidth, nHeight, bRepaint);
+	}
 }

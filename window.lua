@@ -62,6 +62,8 @@ function getTargetWindowRect()
 
     r["width"] = r.right - r.left
     r["height"] = r.bottom - r.top
+  else
+    r = nil
   end
   m.destroy()
   m = nil
@@ -71,4 +73,31 @@ end
 -- 目标进程是否在所有窗口最顶层
 function  targetWindowIsTop()
   return getForegroundProcess() == processId
+end
+
+--[[
+  移动窗口: moveTargetWindow(number x, number y, number? nWidth, number? nHeight, number? bRepaint): bool 如果未指定宽高，则默认为当前宽高
+  https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-movewindow
+]]
+function moveTargetWindow(x, y, nWidth, nHeight, bRepaint)
+  if type(x) ~= 'number' and type(y) ~= 'number' then return false end
+  
+  local rect = getTargetWindowRect();
+  if rect == nil then return false end
+  
+  if nWidth == nil then
+    nWidth = rect.width
+  end
+
+  if nHeight == nil then
+    nHeight = rect.height
+  end
+
+  if type(nWidth) ~= 'number' and type(nHeight) ~= 'number' then return false end
+
+  if bRepaint == nil then
+    bRepaint = true
+  end
+
+  return executeCodeEx(0, nil, "moveTargetWindow", x, y, nWidth, nHeight, bRepaint and 1 or 0) ~= 0
 end
