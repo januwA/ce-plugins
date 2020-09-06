@@ -1,6 +1,8 @@
 ﻿// dllmain.cpp : 定义 DLL 应用程序的入口点。
 #include "pch.h"
 #include <Windows.h>
+#include <Psapi.h>
+#include <TlHelp32.h>
 #include <iostream>
 #include <string>
 
@@ -17,6 +19,9 @@ wchar_t targetFilePath[1024] = {};
 
 // target文件目录
 wchar_t targetFileDir[1024] = L"\0";
+
+// 主模块名 xxx.exe
+WCHAR targetModuleName[256];
 
 BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
 {
@@ -165,5 +170,28 @@ extern "C" {
     HWND hwnd = getTargetWindow();
 		if (!hwnd) return FALSE;
     return MoveWindow(hwnd, x, y, nWidth, nHeight, bRepaint);
+	}
+	
+	/*
+	 返回主模块名
+	*/
+  __declspec(dllexport) WCHAR* __stdcall getTargetModuleName()
+	{
+		if (wcslen(targetModuleName)) return targetModuleName;
+    HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, GetCurrentProcessId());
+		if (hSnap != INVALID_HANDLE_VALUE)
+		{
+			MODULEENTRY32 me;
+			me.dwSize = sizeof(me);
+			if (Module32First(hSnap, &me))
+			{
+				do {
+					memcpy_s(targetModuleName, 256, me.szModule, 256);
+					break;
+				} while (Module32Next(hSnap, &me));
+			}
+		}
+		CloseHandle(hSnap);
+		return targetModuleName;
 	}
 }

@@ -12,14 +12,30 @@ end
 
 -- 加上目标进程是x86还是x64的标识
 local function setProcessLabel()
-  local Caption = MainForm.ProcessLabel.Caption
-  local str = targetIs64Bit() and "x64" or "x86"
-  MainForm.ProcessLabel.Caption = str .. "-" .. Caption
+  local a = targetIs64Bit() and "x64" or "x86"
+  local c = getTargetModuleName() -- 修复中文
+
+  if c == nil or c == "" then
+    local Caption = MainForm.ProcessLabel.Caption
+    MainForm.ProcessLabel.Caption = a .. "-" .. Caption
+  else
+    local b = hexPaddingZero(processId)
+    MainForm.ProcessLabel.Caption = a .. "-" .. b .. "-" .. c
+  end
 end
 
 local function onOpenProcessNext()
   initDLL()
-  setProcessLabel()
+
+  setTimeout(
+    function()
+      -- 等待dll加载解析后，才开始执行这些函数
+
+      setProcessLabel()
+
+    end,
+    500
+  )
 end
 
 --附加进程会调用这个钩子函数
@@ -28,7 +44,7 @@ processId = 0 -- 进程id
 function onOpenProcess(openprocess_id)
   processId = openprocess_id
 
-  setTimeout(onOpenProcessNext, 1000)
+  setTimeout(onOpenProcessNext, 500)
 end
 
 -- 打印table数据
@@ -40,12 +56,16 @@ end
 
 -- 获取目标程序的文件位置
 function getTargetFilePath()
+  if not getAddressSafe("getTargetFilePath") then return nil end
+
   local p_wchar = executeCodeEx(0, nil, "getTargetFilePath")
   return readString(p_wchar, 1024, true)
 end
 
 -- 获取目标程序的文件目录
 function getTargetFileDir()
+  if not getAddressSafe("getTargetFileDir") then return nil end
+
   local p_wchar = executeCodeEx(0, nil, "getTargetFileDir")
   return readString(p_wchar, 1024, true)
 end
@@ -79,6 +99,42 @@ end
 		https://www.cnblogs.com/ajanuw/p/13607687.html
 ]]
 function exitWindowsEx(val)
-  if type(val) ~= 'number' then return false end
+  if not getAddressSafe("exitWindowsEx") then return nil end
+
+  if type(val) ~= "number" then
+    return false
+  end
   return executeCodeEx(0, nil, "exitWindowsEx", val) == 1
+end
+
+--[[
+  获取目标进程主模块名
+]]
+function getTargetModuleName()
+  
+  if not getAddressSafe("getTargetModuleName") then return nil end
+
+  local p_char = executeCodeEx(0, nil, "getTargetModuleName")
+  return readString(p_char, 256, true)
+end
+
+--[[
+  number转hex在补零
+  print(hexPaddingZero(10))
+]]
+function hexPaddingZero(num, len)
+  if type(num) ~= "number" then
+    return nil
+  end
+
+  local hex = string.upper(string.format("%x", num))
+
+  if len == nil then
+    len = 8
+  end
+
+  while #hex < len do
+    hex = "0" .. hex
+  end
+  return hex
 end
