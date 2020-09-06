@@ -74,4 +74,5 @@ writeBytes(0x008E05AE, r)
 - exitWindowsEx(number val): bool  0关机 1重启 2注销 
 - moveTargetWindow(number x, number y, number? nWidth, number? nHeight, number? bRepaint): bool 移动窗口,如果未指定宽高，则默认为当前宽高
 - hexPaddingZero(number num, number? len): string 返回补零后的hex字符串
-- getTargetModuleName(): string 获取主模块名称 `xxx.exe`
+- getTargetModuleName(): string 获取主模块名称 `xxx.exe`,全局变量`process`处理不了中文
+- autoClickTargetWindow(number? downKey, number? upKey, number? offset, number? time): function 默认鼠标右键自动点击目标窗口, DISABLE时 必须调用返回的函数，以便清理计时器

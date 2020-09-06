@@ -32,7 +32,6 @@ local function onOpenProcessNext()
       -- 等待dll加载解析后，才开始执行这些函数
 
       setProcessLabel()
-
     end,
     500
   )
@@ -56,7 +55,9 @@ end
 
 -- 获取目标程序的文件位置
 function getTargetFilePath()
-  if not getAddressSafe("getTargetFilePath") then return nil end
+  if not getAddressSafe("getTargetFilePath") then
+    return nil
+  end
 
   local p_wchar = executeCodeEx(0, nil, "getTargetFilePath")
   return readString(p_wchar, 1024, true)
@@ -64,7 +65,9 @@ end
 
 -- 获取目标程序的文件目录
 function getTargetFileDir()
-  if not getAddressSafe("getTargetFileDir") then return nil end
+  if not getAddressSafe("getTargetFileDir") then
+    return nil
+  end
 
   local p_wchar = executeCodeEx(0, nil, "getTargetFileDir")
   return readString(p_wchar, 1024, true)
@@ -99,7 +102,9 @@ end
 		https://www.cnblogs.com/ajanuw/p/13607687.html
 ]]
 function exitWindowsEx(val)
-  if not getAddressSafe("exitWindowsEx") then return nil end
+  if not getAddressSafe("exitWindowsEx") then
+    return nil
+  end
 
   if type(val) ~= "number" then
     return false
@@ -111,8 +116,9 @@ end
   获取目标进程主模块名
 ]]
 function getTargetModuleName()
-  
-  if not getAddressSafe("getTargetModuleName") then return nil end
+  if not getAddressSafe("getTargetModuleName") then
+    return nil
+  end
 
   local p_char = executeCodeEx(0, nil, "getTargetModuleName")
   return readString(p_char, 256, true)
@@ -137,4 +143,34 @@ function hexPaddingZero(num, len)
     hex = "0" .. hex
   end
   return hex
+end
+
+--[[
+
+检查是否启用mono，启动后JIT编译指定的函数
+
+{$lua}
+  if syntaxcheck then return end
+  _checkMonoMethod('PlayerAttribute', 'set_currentEnergy')
+{$asm}
+]]
+function autorunMonoMethod(cName, mName)
+  -- 检查参数
+  if type(cName) ~= "string" or type(mName) ~= "string" then
+    return
+  end
+
+  -- 检查是否附加进程
+  if process == nil or readInteger(process) == 0 then
+    return
+  end
+
+  -- 激活Mono
+  mono_initialize()
+
+  -- Jit编译
+  if LaunchMonoDataCollector() ~= 0 then
+    local mId = mono_findMethod("Assembly-CSharp", cName, mName)
+    mono_compile_method(mId)
+  end
 end

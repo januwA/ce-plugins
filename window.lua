@@ -101,3 +101,59 @@ function moveTargetWindow(x, y, nWidth, nHeight, bRepaint)
 
   return executeCodeEx(0, nil, "moveTargetWindow", x, y, nWidth, nHeight, bRepaint and 1 or 0) ~= 0
 end
+
+--[[
+  自动点击目标窗口
+  https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-mouse_event
+
+  downKey  按下时的值 默认 MOUSEEVENTF_LEFTDOWN
+  upKey    抬起时的值 默认 MOUSEEVENTF_LEFTUP
+  offset 偏移量
+  time  执行时间间隔 默认 200毫秒
+
+  ```
+    {$lua}
+    if syntaxcheck then return end
+
+    [ENABLE]
+    closeCb = autoClickTargetWindow()
+
+    [DISABLE]
+    closeCb()
+    closeCb = nil
+  ```
+]]
+function autoClickTargetWindow(downKey, upKey, offset, time)
+  
+  -- 获取目标进程窗口属性
+  local rect = getTargetWindowRect()
+  if rect == nil then
+    return
+  end
+
+  if downKey == nil then downKey = MOUSEEVENTF_LEFTDOWN end
+  if upKey == nil then upKey = MOUSEEVENTF_LEFTUP end
+  if offset == nil then offset = 10 end
+  if time == nil or type(time) ~= "number" then time = 200 end
+
+  local ptimer = setInterval(function()
+    -- 是否选中游戏
+    if not targetWindowIsTop() then return end
+  
+    -- 当前鼠标位置
+    local x,y = getMousePos()
+  
+    -- 在游戏区域内
+    if x > rect.left + offset and x < rect.right - offset and
+       y > rect.top + offset and y < rect.bottom - offset then
+       mouse_event(downKey)
+       sleep(20)
+       mouse_event(upKey)
+    end
+  end, time)
+
+  -- 清理函数
+  return function ()
+    clearInterval(ptimer)
+  end
+end
