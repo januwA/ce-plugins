@@ -14,14 +14,11 @@ extern "C"  __declspec(dllexport) BYTE isInjectCE_PluginDLL = 0;
 // target窗口句柄
 HWND targetWindow = 0;
 
-// target文件路径
-wchar_t targetFilePath[1024] = {};
-
-// target文件目录
-wchar_t targetFileDir[1024] = L"\0";
-
 // 主模块名 xxx.exe
 WCHAR targetModuleName[256];
+
+// exe path
+WCHAR targetExePath[1024];
 
 BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
 {
@@ -74,35 +71,6 @@ extern "C" {
 		return targetWindow;
 	}
 
-	// 返回目标进程的文件路径
-	__declspec(dllexport) wchar_t* __stdcall getTargetFilePath()
-	{
-		if (wcslen(targetFilePath) != 0) return targetFilePath;
-		GetModuleFileNameW(NULL, targetFilePath, sizeof(targetFilePath));
-		return targetFilePath;
-	}
-
-	// 返回目标进程的文件目录
-	__declspec(dllexport) wchar_t* __stdcall getTargetFileDir()
-	{
-
-		if (wcslen(targetFileDir) != 0) return targetFileDir;
-
-		string s = "";
-		s.resize(1024);
-		if (GetModuleFileNameA(NULL, (LPSTR)s.data(), s.size()))
-		{
-			// C:\Users\ajanuw\Desktop\game2.exe  to  C:\Users\ajanuw\Desktop\
-			//
-			string s2 = s.substr(0, s.find_last_of("\\") + 1);
-
-			setlocale(LC_ALL, "chs");
-			MultiByteToWideChar(CP_ACP, 0, s2.c_str(), s2.length(), targetFileDir, s2.length());
-		}
-		return targetFileDir;
-	}
-
-	
 	/*
 		0关机 1重启 2注销
 		返回FALSE则失败，否者返回TRUE
@@ -161,16 +129,6 @@ extern "C" {
 
 		return TRUE;
 	}
-
-	/*
-	  移动目标窗口
-	*/
-	__declspec(dllexport) BOOL __stdcall moveTargetWindow(int x, int y, int nWidth, int nHeight, BOOL bRepaint)
-	{
-    HWND hwnd = getTargetWindow();
-		if (!hwnd) return FALSE;
-    return MoveWindow(hwnd, x, y, nWidth, nHeight, bRepaint);
-	}
 	
 	/*
 	 返回主模块名
@@ -178,20 +136,15 @@ extern "C" {
   __declspec(dllexport) WCHAR* __stdcall getTargetModuleName()
 	{
 		if (wcslen(targetModuleName)) return targetModuleName;
-    HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, GetCurrentProcessId());
-		if (hSnap != INVALID_HANDLE_VALUE)
-		{
-			MODULEENTRY32 me;
-			me.dwSize = sizeof(me);
-			if (Module32First(hSnap, &me))
-			{
-				do {
-					memcpy_s(targetModuleName, 256, me.szModule, 256);
-					break;
-				} while (Module32Next(hSnap, &me));
-			}
-		}
-		CloseHandle(hSnap);
+		GetModuleBaseNameW(GetCurrentProcess(), 0, targetModuleName, sizeof(targetModuleName));
 		return targetModuleName;
+	}
+
+	/* 获取EXE PATH */
+	__declspec(dllexport) WCHAR* __stdcall getTargetExePath()
+	{
+		if (wcslen(targetExePath) != 0) return targetExePath;
+    GetModuleFileNameExW(GetCurrentProcess(), NULL, targetExePath, sizeof(targetExePath));
+		return targetExePath;
 	}
 }

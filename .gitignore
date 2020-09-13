@@ -10,8 +10,6 @@ images/import128x128.png
 !.gitignore
 
 !images
-!autorunMonoMethod.lua
-!getJmpNewBytes.lua
 !movbe.lua
 !README.md
 !timer.lua
@@ -19,4 +17,5 @@ images/import128x128.png
 !ce3.jpg
 !load-my-image.lua
 !CE_Plugin/
-!window.lua
+!Target.lua
+!onOpenProcess.lua
