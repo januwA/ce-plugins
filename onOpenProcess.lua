@@ -6,7 +6,6 @@ local function initDLL()
         "autorun\\CE_Plugin\\Release\\CE_Plugin.dll")
     -- print(dllpath)
     injectDLL(dllpath)
-    writeBytes(getAddressSafe("isInjectCE_PluginDLL"), 1)
   end
 end
 
@@ -34,23 +33,29 @@ local function initTarget()
   Target.getModuleName()
 end
 
-local function onOpenProcessNext()
-  initDLL()
-
-  -- 等待dll加载解析后，才开始执行这些函数
-  setTimeout(
-    function()
-      setProcessLabel()
-      initTarget()
-    end,
-    500
-  )
-end
-
 --附加进程会调用这个钩子函数
 -- https://wiki.cheatengine.org/index.php?title=Lua:onOpenProcess
 processId = 0 -- 进程id
 function onOpenProcess(openprocess_id)
   processId = openprocess_id
-  setTimeout(onOpenProcessNext, 500)
+
+  setTimeout(
+    function()
+      initDLL()
+      _____time =
+        setInterval(
+        function()
+          if isInjectPluginDLL() then
+            clearInterval(_____time)
+            _____time = nil
+            -- 等待dll加载解析后，才开始执行这些函数
+            setProcessLabel()
+            initTarget()
+          end
+        end,
+        200
+      )
+    end,
+    500
+  )
 end

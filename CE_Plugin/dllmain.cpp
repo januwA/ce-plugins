@@ -9,7 +9,7 @@
 using namespace std;
 
 // 是否注入符号
-extern "C"  __declspec(dllexport) BYTE isInjectCE_PluginDLL = 0;
+extern "C" __declspec(dllexport) BYTE isInjectCE_PluginDLL = 1;
 
 // target窗口句柄
 HWND targetWindow = 0;
