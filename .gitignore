@@ -19,3 +19,5 @@ images/import128x128.png
 !CE_Plugin/
 !Target.lua
 !onOpenProcess.lua
+!CopyCurrentAddress.lua
+!CopyPointers.lua
