@@ -49,9 +49,10 @@ end, 100)
 ```
 {$lua}
   if syntaxcheck then return end
-  _checkMonoMethod('PlayerAttribute', 'set_currentEnergy')
+  autorunMonoMethod('PlayerAttribute', 'set_currentEnergy')
 {$asm}
 ```
+有个别名`mono_jit`
 
 ## getJmpNewBytes
 获取新的跳转字节集
